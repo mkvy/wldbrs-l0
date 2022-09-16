@@ -1,8 +1,8 @@
 package main
 
 import (
-	"ConnToNATSTest/publisher/service"
 	"fmt"
+	"github.com/mkvy/wldbrs-l0/publisher/service"
 	"os"
 )
 
@@ -28,7 +28,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = nc.PublishFromStdinCycle(channel)
+	err = nc.PublishFromFile(channel, pathToPubData)
 	if err != nil {
 		panic(err)
 	}
