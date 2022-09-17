@@ -9,7 +9,7 @@ const (
 	connStr = "user=root password=root dbname=testbd sslmode=disable"
 )
 
-var id = 8
+var id = 9
 
 type DBSchema struct {
 	Foo_id   int

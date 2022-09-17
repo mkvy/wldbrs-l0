@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	_ "github.com/lib/pq"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/database"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/model"
@@ -25,7 +26,12 @@ func main() {
 	}
 	var orderData model.OrderData
 	sub, err := sc.Subscribe(channel, func(msg *stan.Msg) {
-		orderData.Scan(msg.Data)
+		er := orderData.Scan(msg.Data)
+		time.Sleep(time.Second)
+		if er != nil {
+			//TODO: catch the err if bad structure
+			fmt.Println(er)
+		}
 		fmt.Printf("Received a message: %s\n", orderData)
 	}, stan.StartWithLastReceived())
 	defer sub.Unsubscribe()
@@ -34,8 +40,12 @@ func main() {
 	}
 
 	time.Sleep(time.Second * 3)
+	validate := validator.New()
+	err = validate.Struct(orderData)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println("DATA", orderData)
-
 	db, err := database.InitDBConn(db_driverName)
 	if err != nil {
 		panic(err)
@@ -44,7 +54,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db.SaveJsonToDB(orderData)
+	//db.SaveJsonToDB(orderData)
 	time.Sleep(time.Second * 1) /*
 		fmt.Println("GETTING ALL ORDERS -----------------------------------")
 		rows, err := db.GetAllOrders()
@@ -62,7 +72,7 @@ func main() {
 			fmt.Println(s.Foo_id, s.Foo_note)
 		}*/
 	fmt.Println("----------- by id ------------")
-	row := db.GetOrderByID(8)
+	row := db.GetOrderByID(5)
 	rowData := new(model.DataItem)
 	err = row.Scan(&rowData.ID, &rowData.OrderData)
 	if err != nil {
