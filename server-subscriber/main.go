@@ -4,6 +4,7 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/database"
+	"github.com/mkvy/wldbrs-l0/server-subscriber/model"
 	"github.com/nats-io/stan.go"
 	"time"
 )
@@ -22,16 +23,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	var data string
+	var orderData model.OrderData
 	sub, err := sc.Subscribe(channel, func(msg *stan.Msg) {
-		data = string(msg.Data)
-		fmt.Printf("Received a message: %s\n", data)
+		orderData.Scan(msg.Data)
+		fmt.Printf("Received a message: %s\n", orderData)
 	}, stan.StartWithLastReceived())
 	defer sub.Unsubscribe()
 	if err != nil {
 		panic(err)
 	}
-	time.Sleep(time.Second * 8)
+
+	time.Sleep(time.Second * 3)
+	fmt.Println("DATA", orderData)
 
 	db, err := database.InitDBConn(db_driverName)
 	if err != nil {
@@ -41,29 +44,29 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	time.Sleep(time.Second * 1)
-	fmt.Println("GETTING ALL ORDERS -----------------------------------")
-	rows, err := db.GetAllOrders()
-	defer rows.Close()
-	strs := []database.DBSchema{}
-	for rows.Next() {
-		str := database.DBSchema{}
-		err := rows.Scan(&str.Foo_id, &str.Foo_note)
-		if err != nil {
-			panic(err)
+	db.SaveJsonToDB(orderData)
+	time.Sleep(time.Second * 1) /*
+		fmt.Println("GETTING ALL ORDERS -----------------------------------")
+		rows, err := db.GetAllOrders()
+		defer rows.Close()
+		strs := []database.DBSchema{}
+		for rows.Next() {
+			str := database.DBSchema{}
+			err := rows.Scan(&str.Foo_id, &str.Foo_note)
+			if err != nil {
+				panic(err)
+			}
+			strs = append(strs, str)
 		}
-		strs = append(strs, str)
-	}
-	for _, s := range strs {
-		fmt.Println(s.Foo_id, s.Foo_note)
-	}
+		for _, s := range strs {
+			fmt.Println(s.Foo_id, s.Foo_note)
+		}*/
 	fmt.Println("----------- by id ------------")
-	row := db.GetOrderByID(5)
-	rowData := database.DBSchema{}
-	err = row.Scan(&rowData.Foo_id, &rowData.Foo_note)
+	row := db.GetOrderByID(8)
+	rowData := new(model.DataItem)
+	err = row.Scan(&rowData.ID, &rowData.OrderData)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(rowData.Foo_id, rowData.Foo_note)
+	fmt.Println(rowData.ID, rowData.OrderData)
 }

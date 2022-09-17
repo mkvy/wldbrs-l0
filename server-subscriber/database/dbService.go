@@ -2,17 +2,18 @@ package database
 
 import (
 	"database/sql"
+	"github.com/mkvy/wldbrs-l0/server-subscriber/model"
 )
 
 const (
 	connStr = "user=root password=root dbname=testbd sslmode=disable"
 )
 
-var id = 6
+var id = 8
 
 type DBSchema struct {
 	Foo_id   int
-	Foo_note []byte
+	Foo_note string
 }
 
 type DBConnection struct {
@@ -34,7 +35,7 @@ func (dbConn *DBConnection) Close() error {
 	return err
 }
 
-func (dbConn *DBConnection) SaveJsonToDB(jsonData []byte) (sql.Result, error) {
+func (dbConn *DBConnection) SaveJsonToDB(jsonData model.OrderData) (sql.Result, error) {
 	result, err := dbConn.db.Exec(`insert into foojsonb (foo_id, foo_note) values ($1, $2)`, id, jsonData)
 	id++
 	return result, err

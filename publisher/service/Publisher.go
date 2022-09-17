@@ -33,6 +33,8 @@ func (sCli *StanClient) Close() {
 
 func (sCli *StanClient) PublishFromFile(channel string, filepath string) error {
 	text, err := os.ReadFile(filepath)
+	fmt.Println("DLINA ", string(text))
+	fmt.Println("DLINA ", len(text))
 	if err != nil {
 		return err
 	}
