@@ -38,14 +38,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+  
 	time.Sleep(time.Second * 3)
 	validate := validator.New()
 	err = validate.Struct(orderData)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("DATA", orderData)
+
+	itemData := new(model.DataItem)
+	itemData.OrderData = orderData
+	itemData.ID = orderData.OrderUid
+	fmt.Println("DATA", itemData)
 
 	db, err := database.InitDBConn(db_driverName)
 	if err != nil {
@@ -55,25 +59,29 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db.SaveJsonToDB(orderData)
-	time.Sleep(time.Second * 1) /*
-		fmt.Println("GETTING ALL ORDERS -----------------------------------")
-		rows, err := db.GetAllOrders()
-		defer rows.Close()
-		strs := []database.DBSchema{}
-		for rows.Next() {
-			str := database.DBSchema{}
-			err := rows.Scan(&str.Foo_id, &str.Foo_note)
-			if err != nil {
-				panic(err)
-			}
-			strs = append(strs, str)
+	//_, err = db.SaveJsonToDB(itemData)
+	if err != nil {
+		panic(err)
+	}
+	time.Sleep(time.Second * 1)
+
+	fmt.Println("GETTING ALL ORDERS -----------------------------------")
+	rows, err := db.GetAllOrders()
+	defer rows.Close()
+	strs := []model.DataItem{}
+	for rows.Next() {
+		str := model.DataItem{}
+		err := rows.Scan(&str.ID, &str.OrderData)
+		if err != nil {
+			panic(err)
 		}
-		for _, s := range strs {
-			fmt.Println(s.Foo_id, s.Foo_note)
-		}*/
+		strs = append(strs, str)
+	}
+	for _, s := range strs {
+		fmt.Println(s.ID, s.OrderData)
+	}
 	fmt.Println("----------- by id ------------")
-	row := db.GetOrderByID(10)
+	row := db.GetOrderByID("b563feb7b2b84b6test")
 	rowData := new(model.DataItem)
 	err = row.Scan(&rowData.ID, &rowData.OrderData)
 	if err != nil {

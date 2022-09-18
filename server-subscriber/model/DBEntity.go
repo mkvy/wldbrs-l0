@@ -8,7 +8,7 @@ import (
 )
 
 type DataItem struct {
-	ID        int
+	ID        string
 	OrderData OrderData
 }
 
