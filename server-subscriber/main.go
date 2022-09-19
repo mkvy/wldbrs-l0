@@ -5,8 +5,8 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/cache"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/database"
-	"github.com/mkvy/wldbrs-l0/server-subscriber/model"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/store"
+	"github.com/mkvy/wldbrs-l0/server-subscriber/subscriber"
 	"github.com/nats-io/stan.go"
 	"time"
 )
@@ -20,11 +20,6 @@ const (
 )
 
 func main() {
-	sc, err := stan.Connect(clusterID, clientID, stan.NatsURL(NATSStreamingURL))
-	defer sc.Close()
-	if err != nil {
-		panic(err)
-	}
 
 	db, err := database.InitDBConn(db_driverName)
 	if err != nil {
@@ -36,22 +31,15 @@ func main() {
 
 	storeService := store.InitStore(*cacheService, *db)
 
-	var orderData model.OrderData
+	sc := subscriber.CreateSub(*storeService)
+	err = sc.Connect(clusterID, clientID, NATSStreamingURL)
+	defer sc.Close()
+	if err != nil {
+		panic(err)
+	}
 
-	sub, err := sc.Subscribe(channel, func(msg *stan.Msg) {
-		er := orderData.Scan(msg.Data)
-		time.Sleep(time.Second)
-		if er != nil {
-			//TODO: catch the err if bad structure
-			fmt.Println(er)
-		}
-		fmt.Printf("Received a message: %s\n", orderData)
-		err = storeService.SaveOrderData(msg.Data)
-		if err != nil {
-			panic(err)
-		}
+	sub, err := sc.SubscribeToChannel(channel, stan.StartWithLastReceived())
 
-	}, stan.StartWithLastReceived())
 	defer sub.Unsubscribe()
 	if err != nil {
 		panic(err)

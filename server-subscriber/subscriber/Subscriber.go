@@ -1,13 +1,20 @@
 package subscriber
 
-import "github.com/nats-io/stan.go"
+import (
+	"fmt"
+	"github.com/mkvy/wldbrs-l0/server-subscriber/store"
+	"github.com/nats-io/stan.go"
+)
 
 type StanSubscriber struct {
 	sc stan.Conn
+	ss store.StoreService
 }
 
-func CreateSub() *StanSubscriber {
-	sc := StanSubscriber{}
+func CreateSub(ss store.StoreService) *StanSubscriber {
+	sc := StanSubscriber{
+		ss: ss,
+	}
 	return &sc
 }
 
@@ -26,6 +33,18 @@ func (sSub *StanSubscriber) Close() {
 	}
 }
 
-func (sSub *StanSubscriber) SubscribeToChannel(channel string, opts ...stan.SubscriptionOption) {
+func (sSub *StanSubscriber) SubscribeToChannel(channel string, opts ...stan.SubscriptionOption) (stan.Subscription, error) {
+	sub, err := sSub.sc.Subscribe(channel, sSub.handlerMsg, opts...)
+	if err != nil {
+		fmt.Println("Can't connect")
+		sSub.ss.RestoreCache()
+	}
+	return sub, err
+}
 
+func (sSub *StanSubscriber) handlerMsg(msg *stan.Msg) {
+	err := sSub.ss.SaveOrderData(msg.Data)
+	if err != nil {
+		fmt.Println("error while saving")
+	}
 }

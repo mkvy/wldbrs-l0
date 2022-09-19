@@ -60,7 +60,7 @@ func (ss *StoreService) GetAllOrders() ([]model.DataItem, error) {
 	return di, err
 }
 
-func (ss *StoreService) RestoreCache(dbService database.DBService) error {
+func (ss *StoreService) RestoreCache() error {
 	dItems, err := ss.GetAllOrders()
 	if dItems == nil {
 		fmt.Println(err)
