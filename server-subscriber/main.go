@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	_ "github.com/lib/pq"
+	"github.com/mkvy/wldbrs-l0/server-subscriber/cache"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/database"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/model"
+	"github.com/mkvy/wldbrs-l0/server-subscriber/store"
 	"github.com/nats-io/stan.go"
 	"time"
 )
@@ -24,7 +25,19 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	db, err := database.InitDBConn(db_driverName)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	cacheService := cache.CacheInit()
+
+	storeService := store.InitStore(*cacheService, *db)
+
 	var orderData model.OrderData
+
 	sub, err := sc.Subscribe(channel, func(msg *stan.Msg) {
 		er := orderData.Scan(msg.Data)
 		time.Sleep(time.Second)
@@ -33,59 +46,26 @@ func main() {
 			fmt.Println(er)
 		}
 		fmt.Printf("Received a message: %s\n", orderData)
+		err = storeService.SaveOrderData(msg.Data)
+		if err != nil {
+			panic(err)
+		}
+
 	}, stan.StartWithLastReceived())
 	defer sub.Unsubscribe()
 	if err != nil {
 		panic(err)
 	}
-  
+
 	time.Sleep(time.Second * 3)
-	validate := validator.New()
-	err = validate.Struct(orderData)
+
+	fmt.Println("getting from cache ", storeService.GetFromCacheByUID("b563feb7b2b84b6test"))
+
+	dItems, err := storeService.GetAllOrders()
 	if err != nil {
 		panic(err)
 	}
 
-	itemData := new(model.DataItem)
-	itemData.OrderData = orderData
-	itemData.ID = orderData.OrderUid
-	fmt.Println("DATA", itemData)
+	fmt.Println("get all orders from database ", dItems)
 
-	db, err := database.InitDBConn(db_driverName)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-	if err != nil {
-		panic(err)
-	}
-	//_, err = db.SaveJsonToDB(itemData)
-	if err != nil {
-		panic(err)
-	}
-	time.Sleep(time.Second * 1)
-
-	fmt.Println("GETTING ALL ORDERS -----------------------------------")
-	rows, err := db.GetAllOrders()
-	defer rows.Close()
-	strs := []model.DataItem{}
-	for rows.Next() {
-		str := model.DataItem{}
-		err := rows.Scan(&str.ID, &str.OrderData)
-		if err != nil {
-			panic(err)
-		}
-		strs = append(strs, str)
-	}
-	for _, s := range strs {
-		fmt.Println(s.ID, s.OrderData)
-	}
-	fmt.Println("----------- by id ------------")
-	row := db.GetOrderByID("b563feb7b2b84b6test")
-	rowData := new(model.DataItem)
-	err = row.Scan(&rowData.ID, &rowData.OrderData)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(rowData.ID, rowData.OrderData)
 }
