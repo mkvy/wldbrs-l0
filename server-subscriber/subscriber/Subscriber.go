@@ -28,7 +28,7 @@ func (sSub *StanSubscriber) Connect(clusterID string, clientID string, URL strin
 }
 
 func (sSub *StanSubscriber) Close() {
-	if sSub != nil {
+	if sSub.sc != nil {
 		sSub.sc.Close()
 	}
 }

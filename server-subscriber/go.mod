@@ -7,6 +7,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.10.7 // indirect
 	github.com/nats-io/nats.go v1.16.0 // indirect

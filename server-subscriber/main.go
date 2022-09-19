@@ -5,9 +5,8 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/cache"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/database"
+	"github.com/mkvy/wldbrs-l0/server-subscriber/server"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/store"
-	"github.com/mkvy/wldbrs-l0/server-subscriber/subscriber"
-	"github.com/nats-io/stan.go"
 	"time"
 )
 
@@ -17,6 +16,7 @@ const (
 	clientID         = "test-client"
 	channel          = "testch"
 	db_driverName    = "postgres"
+	addr_server      = "localhost:8181"
 )
 
 func main() {
@@ -31,7 +31,12 @@ func main() {
 
 	storeService := store.InitStore(*cacheService, *db)
 
-	sc := subscriber.CreateSub(*storeService)
+	err = storeService.RestoreCache()
+	if err != nil {
+		panic(err)
+	}
+
+	/*sc := subscriber.CreateSub(*storeService)
 	err = sc.Connect(clusterID, clientID, NATSStreamingURL)
 	defer sc.Close()
 	if err != nil {
@@ -44,7 +49,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	*/
 	time.Sleep(time.Second * 3)
 
 	fmt.Println("getting from cache ", storeService.GetFromCacheByUID("b563feb7b2b84b6test"))
@@ -56,4 +61,10 @@ func main() {
 
 	fmt.Println("get all orders from database ", dItems)
 
+	server := server.InitServer(*storeService, addr_server)
+	err = server.Start()
+	if err != nil {
+		panic(err)
+	}
+	defer server.Stop()
 }
