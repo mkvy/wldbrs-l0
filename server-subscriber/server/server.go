@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/model"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/store"
@@ -50,6 +49,10 @@ func (s *Server) ordersHandler(w http.ResponseWriter, r *http.Request) {
 		parsedTemplate, _ := template.ParseFiles("./server/templates/notFound.html")
 		err := parsedTemplate.Execute(w, struct{ Id string }{Id: id})
 		if err != nil {
+			_, err = w.Write([]byte("no data with id " + id))
+			if err != nil {
+				return
+			}
 			log.Printf("Error occurred while executing the template : ", id)
 			return
 		}
@@ -61,9 +64,9 @@ func (s *Server) ordersHandler(w http.ResponseWriter, r *http.Request) {
 		OrderData: od,
 	}
 	parsedTemplate, _ := template.ParseFiles("./server/templates/index.html")
-	fmt.Println("DATA ITEM", dataItem)
 	err := parsedTemplate.Execute(w, dataItem)
 	if err != nil {
+		w.Write([]byte("error while executing template"))
 		log.Printf("Error occurred while executing the template : ", dataItem)
 		return
 	}

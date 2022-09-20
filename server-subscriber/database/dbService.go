@@ -2,21 +2,19 @@ package database
 
 import (
 	"database/sql"
+	"github.com/mkvy/wldbrs-l0/server-subscriber/config"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/model"
-)
-
-const (
-	connStr = "user=root password=root dbname=testbd sslmode=disable"
 )
 
 type DBService struct {
 	db *sql.DB
 }
 
-func InitDBConn(driverName string) (*DBService, error) {
+func InitDBConn(cfg config.Config) (*DBService, error) {
 	dbConn := DBService{}
 	var err error
-	dbConn.db, err = sql.Open(driverName, connStr)
+	connStr := "user=" + cfg.Database.Username + " password=" + cfg.Database.Password + " dbname=" + cfg.Database.DBname + " sslmode=disable"
+	dbConn.db, err = sql.Open(cfg.Database.DriverName, connStr)
 	if err != nil {
 		return &DBService{}, err
 	}

@@ -1,0 +1,16 @@
+nats-server:
+  host: "localhost"
+  port: 4223
+  cluster_id: "test-cluster"
+  client_id: "test-client"
+  channel: "testch"
+
+database:
+  user: "root"
+  pass: "root"
+  dbname: "testbd"
+  driverName: "postgres"
+
+http-server:
+  host: "localhost"
+  port: 8181

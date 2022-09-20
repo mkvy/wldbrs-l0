@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/store"
 	"github.com/nats-io/stan.go"
+	"log"
 )
 
 type StanSubscriber struct {
@@ -45,6 +46,7 @@ func (sSub *StanSubscriber) SubscribeToChannel(channel string, opts ...stan.Subs
 func (sSub *StanSubscriber) handlerMsg(msg *stan.Msg) {
 	err := sSub.ss.SaveOrderData(msg.Data)
 	if err != nil {
-		fmt.Println("error while saving")
+		log.Println("error while saving: ")
+		log.Println(err)
 	}
 }

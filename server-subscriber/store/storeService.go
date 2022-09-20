@@ -52,7 +52,6 @@ func (ss *StoreService) GetFromCacheByUID(id string) model.OrderData {
 
 func (ss *StoreService) GetAllOrders() ([]model.DataItem, error) {
 	di, err := ss.db.GetAllOrders()
-	//todo cache
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
