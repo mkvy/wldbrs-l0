@@ -41,7 +41,7 @@ func (dbService *DBService) GetAllOrders() ([]model.DataItem, error) {
 		str := model.DataItem{}
 		err := rows.Scan(&str.ID, &str.OrderData)
 		if err != nil {
-			panic(err)
+			return strs, err
 		}
 		strs = append(strs, str)
 	}

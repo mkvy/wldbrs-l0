@@ -26,6 +26,7 @@ func InitApp(cfg config.Config) *App {
 func (app *App) Run() {
 	db, err := database.InitDBConn(app.cfg)
 	if err != nil {
+		log.Println("Error while connnecting to database")
 		panic(err)
 	}
 	defer db.Close()
@@ -60,7 +61,8 @@ func (app *App) Run() {
 
 	dItems, err := storeService.GetAllOrders()
 	if err != nil {
-		panic(err)
+		log.Println("orders not found in database")
+		log.Println(err)
 	}
 
 	fmt.Println("get all orders from database ", dItems)
@@ -68,6 +70,7 @@ func (app *App) Run() {
 	server := server.InitServer(*storeService, app.cfg.Http_server.Host+":"+app.cfg.Http_server.Port)
 	err = server.Start()
 	if err != nil {
+		log.Println("error while starting server")
 		panic(err)
 	}
 	defer server.Stop()

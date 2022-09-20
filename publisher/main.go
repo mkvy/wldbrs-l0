@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/mkvy/wldbrs-l0/publisher/service"
+	"log"
 	"os"
 )
 
@@ -26,10 +27,9 @@ func main() {
 	err := nc.Connect(clusterID, clientID, NATSStreamingURL)
 	defer nc.Close()
 	if err != nil {
+		log.Println("Error while connecting to nats")
 		panic(err)
 	}
-	err = nc.PublishFromFile(channel, pathToPubData)
-	if err != nil {
-		panic(err)
-	}
+	//err = nc.PublishFromFile(channel, pathToPubData)
+	_ = nc.PublishFromStdinCycle(channel)
 }

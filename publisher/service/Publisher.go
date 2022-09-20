@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/nats-io/stan.go"
+	"log"
 	"os"
 	"strings"
 )
@@ -53,6 +54,7 @@ func (sCli *StanClient) PublishFromStdinCycle(channel string) error {
 		}
 		text, err = os.ReadFile(filepath)
 		if err != nil {
+			log.Println("Error reading file")
 			return err
 		}
 		sCli.sc.Publish(channel, text)

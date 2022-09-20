@@ -6,6 +6,7 @@ import (
 	"github.com/mkvy/wldbrs-l0/server-subscriber/cache"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/database"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/model"
+	"log"
 )
 
 type StoreService struct {
@@ -53,7 +54,7 @@ func (ss *StoreService) GetFromCacheByUID(id string) model.OrderData {
 func (ss *StoreService) GetAllOrders() ([]model.DataItem, error) {
 	di, err := ss.db.GetAllOrders()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return nil, err
 	}
 	return di, err
