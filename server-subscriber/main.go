@@ -6,15 +6,6 @@ import (
 	config "github.com/mkvy/wldbrs-l0/server-subscriber/config"
 )
 
-const (
-	NATSStreamingURL = "127.0.0.1:4223"
-	clusterID        = "test-cluster"
-	clientID         = "test-client"
-	channel          = "testch"
-	db_driverName    = "postgres"
-	addr_server      = "localhost:8181"
-)
-
 func main() {
 	config := new(config.Config)
 	config.InitFile()
