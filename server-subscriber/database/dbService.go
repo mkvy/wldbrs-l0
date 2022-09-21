@@ -10,6 +10,10 @@ type DBService struct {
 	db *sql.DB
 }
 
+func NewDB(database *sql.DB) *DBService {
+	return &DBService{db: database}
+}
+
 func InitDBConn(cfg config.Config) (*DBService, error) {
 	dbConn := DBService{}
 	var err error
@@ -26,7 +30,7 @@ func (dbService *DBService) Close() error {
 	return err
 }
 
-func (dbService *DBService) SaveJsonToDB(jsonData *model.DataItem) (sql.Result, error) {
+func (dbService *DBService) SaveOrder(jsonData *model.DataItem) (sql.Result, error) {
 	result, err := dbService.db.Exec(`insert into orders (id, orderdata) values ($1, $2)`, jsonData.ID, jsonData.OrderData)
 	return result, err
 }

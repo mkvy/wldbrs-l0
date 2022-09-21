@@ -26,20 +26,20 @@ func (ss *StoreService) SaveOrderData(data []byte) error {
 	od := new(model.OrderData)
 	err := od.Scan(data)
 	if err != nil {
-		fmt.Println("Wrong format")
+		log.Println("Wrong format")
 		return err
 	}
 	validate := validator.New()
 	err = validate.Struct(od)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return err
 	}
 	itemData := new(model.DataItem)
 	itemData.OrderData = *od
 	itemData.ID = od.OrderUid
 	ss.cache.AddToCache(*od)
-	_, err = ss.db.SaveJsonToDB(itemData)
+	_, err = ss.db.SaveOrder(itemData)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -63,7 +63,7 @@ func (ss *StoreService) GetAllOrders() ([]model.DataItem, error) {
 func (ss *StoreService) RestoreCache() error {
 	dItems, err := ss.GetAllOrders()
 	if dItems == nil {
-		fmt.Println(err)
+		log.Println(err)
 		return err
 	}
 	for _, dItem := range dItems {

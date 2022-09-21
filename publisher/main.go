@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/mkvy/wldbrs-l0/publisher/service"
 	"log"
 	"os"
@@ -19,10 +18,10 @@ func main() {
 	if len(os.Args) > 0 {
 		pathToPubData = os.Args[1]
 	} else {
-		fmt.Println("Exiting")
+		log.Println("Exiting")
 		os.Exit(0)
 	}
-	fmt.Println(pathToPubData)
+	log.Println(pathToPubData)
 	nc := service.CreateSTAN()
 	err := nc.Connect(clusterID, clientID, NATSStreamingURL)
 	defer nc.Close()

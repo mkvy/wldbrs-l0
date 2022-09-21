@@ -1,7 +1,6 @@
 package subscriber
 
 import (
-	"fmt"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/store"
 	"github.com/nats-io/stan.go"
 	"log"
@@ -37,7 +36,7 @@ func (sSub *StanSubscriber) Close() {
 func (sSub *StanSubscriber) SubscribeToChannel(channel string, opts ...stan.SubscriptionOption) (stan.Subscription, error) {
 	sub, err := sSub.sc.Subscribe(channel, sSub.handlerMsg, opts...)
 	if err != nil {
-		fmt.Println("Can't connect")
+		log.Println("Can't connect")
 		sSub.ss.RestoreCache()
 	}
 	return sub, err
