@@ -32,7 +32,7 @@ func (s *Server) Start() error {
 	if err != nil {
 		return err
 	}
-	return nil
+	return err
 }
 
 func (s *Server) Stop() error {
