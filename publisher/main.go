@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	NATSStreamingURL = "127.0.0.1:4223"
+	NATSStreamingURL = "localhost:4223"
 	clusterID        = "test-cluster"
 	clientID         = "test-publisher"
 	channel          = "testch"

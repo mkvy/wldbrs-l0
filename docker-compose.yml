@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  postgresql:
+    container_name: postgresql
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./initdb/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: ordersDB
+      PG_DATA: /data/postgres
+
+  stan:
+    container_name: stanserver
+    image: nats-streaming:0.24.6
+    ports:
+      - "4223:4222"
+      - "8223:8222"
