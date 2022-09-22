@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/config"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/model"
+	"log"
 )
 
 type DBService struct {
@@ -32,6 +33,9 @@ func (dbService *DBService) Close() error {
 
 func (dbService *DBService) SaveOrder(jsonData *model.DataItem) (sql.Result, error) {
 	result, err := dbService.db.Exec(`insert into orders (id, orderdata) values ($1, $2)`, jsonData.ID, jsonData.OrderData)
+	if err != nil {
+		log.Println("New data in database stored: ", jsonData)
+	}
 	return result, err
 }
 

@@ -48,4 +48,5 @@ func (sSub *StanSubscriber) handlerMsg(msg *stan.Msg) {
 		log.Println("error while saving: ")
 		log.Println(err)
 	}
+	log.Println("RECEIVED A NEW MESSAGE FROM NATS -")
 }

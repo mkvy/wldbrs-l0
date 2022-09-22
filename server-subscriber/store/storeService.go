@@ -69,5 +69,6 @@ func (ss *StoreService) RestoreCache() error {
 	for _, dItem := range dItems {
 		ss.cache.AddToCache(dItem.OrderData)
 	}
+	log.Println("--CACHE IS RESTORED--")
 	return err
 }

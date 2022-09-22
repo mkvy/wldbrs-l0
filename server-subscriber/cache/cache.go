@@ -2,6 +2,7 @@ package cache
 
 import (
 	"github.com/mkvy/wldbrs-l0/server-subscriber/model"
+	"log"
 )
 
 type CacheStore map[string]model.OrderData
@@ -20,6 +21,7 @@ func CacheInit() *CacheService {
 
 func (Cservice *CacheService) AddToCache(data model.OrderData) {
 	Cservice.CacheStore[data.OrderUid] = data
+	log.Println("new data in cache stored: ", data)
 }
 
 func (Cservice *CacheService) GetFromCache(order_uid string) model.OrderData {

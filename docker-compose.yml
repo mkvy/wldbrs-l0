@@ -8,6 +8,7 @@ services:
       - "5432:5432"
     volumes:
       - ./initdb/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./initdb/dbdata:/data/postgres
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
@@ -20,3 +21,8 @@ services:
     ports:
       - "4223:4222"
       - "8223:8222"
+    command:
+      - "--store"
+      - "file"
+      - "--dir"
+      - "data"

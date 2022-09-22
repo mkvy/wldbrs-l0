@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/cache"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/config"
 	"github.com/mkvy/wldbrs-l0/server-subscriber/database"
@@ -57,18 +56,6 @@ func (app *App) Run() {
 	if err != nil {
 		log.Println("Error while subscribing to channel")
 	}
-
-	time.Sleep(time.Second * 3)
-
-	fmt.Println("getting from cache ", storeService.GetFromCacheByUID("b563feb7b2b84b6test"))
-
-	dItems, err := storeService.GetAllOrders()
-	if err != nil {
-		log.Println("orders not found in database")
-		log.Println(err)
-	}
-
-	fmt.Println("get all orders from database ", dItems)
 
 	server := server.InitServer(*storeService, app.cfg.Http_server.Host+":"+app.cfg.Http_server.Port)
 
