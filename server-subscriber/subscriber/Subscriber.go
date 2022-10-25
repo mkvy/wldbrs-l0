@@ -43,10 +43,9 @@ func (sSub *StanSubscriber) SubscribeToChannel(channel string, opts ...stan.Subs
 }
 
 func (sSub *StanSubscriber) handlerMsg(msg *stan.Msg) {
+	log.Println("RECEIVED A NEW MESSAGE FROM NATS -")
 	err := sSub.ss.SaveOrderData(msg.Data)
 	if err != nil {
-		log.Println("error while saving: ")
-		log.Println(err)
+		log.Printf("%s %s", "error while saving: ", err)
 	}
-	log.Println("RECEIVED A NEW MESSAGE FROM NATS -")
 }
